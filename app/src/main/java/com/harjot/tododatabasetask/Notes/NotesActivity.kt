@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.icu.text.Transliterator.Position
 import android.os.Bundle
 import android.view.WindowManager.LayoutParams
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -21,6 +22,7 @@ class NotesActivity : AppCompatActivity() {
     var array = arrayListOf<NotesEntity>()
     var notesAdapter = NotesAdapter(array)
     lateinit var todoDatabase:TodoDatabase
+    var notesEntity = NotesEntity()
     lateinit var layoutManager: LinearLayoutManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

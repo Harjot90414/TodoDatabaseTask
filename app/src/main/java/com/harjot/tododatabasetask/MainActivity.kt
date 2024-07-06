@@ -22,8 +22,7 @@ class MainActivity : AppCompatActivity(), InterfaceClass {
     lateinit var todoDatabase: TodoDatabase
     var arrayList = ArrayList<TodoEntity>()
     lateinit var adapterClass : AdapterClass
-    var todoEntity = TodoEntity()
-    private val TAG = "MainActivity"
+    var counter =0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -46,7 +45,7 @@ class MainActivity : AppCompatActivity(), InterfaceClass {
         }
         binding.radioGroup.setOnCheckedChangeListener { radioGroup, i ->
             when(i){
-                R.id.rbAll->getData()
+                R.id.rbAll->getData(0)
                 R.id.rbHigh->getHighData()
                 R.id.rbMedium->getMediumData()
                 R.id.rbLow->getLowData()
@@ -69,7 +68,15 @@ class MainActivity : AppCompatActivity(), InterfaceClass {
             Toast.makeText(this, "The item is  deleted", Toast.LENGTH_SHORT).show()
             todoDatabase.todoDao().delete(arrayList[position])
             adapterClass.notifyDataSetChanged()
-            getData()
+            if (binding.rbAll.isChecked){
+                getData()
+            }else if(binding.rbHigh.isChecked){
+                getData(1)
+            }else if(binding.rbMedium.isChecked){
+                getData(2)
+            }else{
+                getData(3)
+            }
         }
         alertDialog.show()
     }
@@ -97,6 +104,12 @@ class MainActivity : AppCompatActivity(), InterfaceClass {
                 dialogBinding.btnAdd.setText("Update")
                 dialogBinding.etTitle.setText(arrayList[position].title)
                 dialogBinding.etDescription.setText(arrayList[position].description)
+
+                when(arrayList[position].status){
+                    1-> dialogBinding.radioGroup.check(R.id.rbHigh)
+                    2-> dialogBinding.radioGroup.check(R.id.rbMedium)
+                    3-> dialogBinding.radioGroup.check(R.id.rbLow)
+                }
             }
             dialogBinding.btnAdd.setOnClickListener {
                 if (dialogBinding.etTitle.text.toString().trim().isNullOrEmpty()){
@@ -112,16 +125,23 @@ class MainActivity : AppCompatActivity(), InterfaceClass {
                 else{
                     if (position>-1){
                         //Update List
+                        counter=0
+                        when(dialogBinding.radioGroup.checkedRadioButtonId){
+                            R.id.rbHigh-> counter = 1
+                            R.id.rbMedium-> counter = 2
+                            R.id.rbLow-> counter = 3
+                        }
                         todoDatabase.todoDao().update(
                             TodoEntity(
                                 id = arrayList[position].id,
                                 title = dialogBinding.etTitle.text.toString(),
-                                description = dialogBinding.etDescription.text.toString()
+                                description = dialogBinding.etDescription.text.toString(),
+                                status = counter
                             )
                         )
                     }else{
                         //Add List
-                        var counter=0
+                        counter=0
                         when(dialogBinding.radioGroup.checkedRadioButtonId){
                             R.id.rbHigh-> counter = 1
                             R.id.rbMedium-> counter = 2
@@ -136,17 +156,27 @@ class MainActivity : AppCompatActivity(), InterfaceClass {
                         )
                     }
                     adapterClass.notifyDataSetChanged()
-                    getData()
+                    if (binding.rbAll.isChecked){
+                        getData()
+                    }else{
+                        getData(dialogBinding.radioGroup.checkedRadioButtonId)
+                    }
                     dismiss()
                 }
             }
             show()
         }
     }
-    fun getData(){
-        arrayList.clear()
-        arrayList.addAll(todoDatabase.todoDao().getList())
-        adapterClass.notifyDataSetChanged()
+    fun getData(num :Int=0){
+        when (num) {
+            0->{arrayList.clear()
+                arrayList . addAll (todoDatabase.todoDao().getList())
+                adapterClass . notifyDataSetChanged ()
+            }
+            1->getHighData()
+            2->getMediumData()
+            3->getLowData()
+        }
     }
     fun getHighData(){
         arrayList.clear()
