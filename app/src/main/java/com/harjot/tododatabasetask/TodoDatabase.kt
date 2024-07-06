@@ -4,8 +4,9 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.harjot.tododatabasetask.Notes.NotesEntity
 
-@Database(entities =[TodoEntity::class], version = 1, exportSchema = true)
+@Database(entities =[TodoEntity::class,NotesEntity::class], version = 1, exportSchema = true)
 abstract class TodoDatabase:RoomDatabase() {
 
     abstract fun todoDao():TodoDao

@@ -1,24 +1,29 @@
 package com.harjot.tododatabasetask
 
 import android.app.Dialog
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.room.RoomDatabase
+import com.google.gson.Gson
+import com.harjot.tododatabasetask.Interface.InterfaceClass
+import com.harjot.tododatabasetask.Notes.NotesActivity
 import com.harjot.tododatabasetask.databinding.ActivityMainBinding
 import com.harjot.tododatabasetask.databinding.DialogLayoutBinding
 
-class MainActivity : AppCompatActivity(),InterfaceClass {
+class MainActivity : AppCompatActivity(), InterfaceClass {
     lateinit var binding: ActivityMainBinding
     lateinit var todoDatabase: TodoDatabase
     var arrayList = ArrayList<TodoEntity>()
     lateinit var adapterClass : AdapterClass
+    var todoEntity = TodoEntity()
+    private val TAG = "MainActivity"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -36,11 +41,17 @@ class MainActivity : AppCompatActivity(),InterfaceClass {
             insets
         }
 
-
         binding.fabAdd.setOnClickListener {
             dialog()
         }
-        getData()
+        binding.radioGroup.setOnCheckedChangeListener { radioGroup, i ->
+            when(i){
+                R.id.rbAll->getData()
+                R.id.rbHigh->getHighData()
+                R.id.rbMedium->getMediumData()
+                R.id.rbLow->getLowData()
+            }
+        }
     }
     override fun onEditCLick(position: Int) {
         dialog(position)
@@ -63,9 +74,16 @@ class MainActivity : AppCompatActivity(),InterfaceClass {
         alertDialog.show()
     }
 
+    override fun listCLick(position: Int) {
+        var intent = Intent(this, NotesActivity::class.java)
+        var modelString = Gson().toJson(arrayList[position])
+        intent.putExtra("notes",modelString)
+        startActivity(intent)
+    }
+
     fun dialog(position: Int = -1){
         var dialogBinding = DialogLayoutBinding.inflate(layoutInflater)
-        var dialog = Dialog(this).apply {
+        Dialog(this).apply {
             setContentView(dialogBinding.root)
             window?.setLayout(
                 WindowManager.LayoutParams.MATCH_PARENT,
@@ -78,30 +96,42 @@ class MainActivity : AppCompatActivity(),InterfaceClass {
                 dialogBinding.tvText.setText("Update Item")
                 dialogBinding.btnAdd.setText("Update")
                 dialogBinding.etTitle.setText(arrayList[position].title)
+                dialogBinding.etDescription.setText(arrayList[position].description)
             }
             dialogBinding.btnAdd.setOnClickListener {
                 if (dialogBinding.etTitle.text.toString().trim().isNullOrEmpty()){
-                    dialogBinding.etTitle.error = "Enter Name"
+                    dialogBinding.etTitle.error = "Enter Title"
+                }else if (dialogBinding.etDescription.text.toString().trim().isNullOrEmpty()) {
+                    dialogBinding.etDescription.error = "Enter Description"
                 }
-//                else if(dialogBinding.rbHigh.isSelected == false &&
-//                    dialogBinding.rbMedium.isSelected == false &&
-//                    dialogBinding.rbLow.isSelected == false){
-//                    Toast.makeText(this@MainActivity, "Select Priority", Toast.LENGTH_SHORT).show()
-//                }
+                else if(dialogBinding.rbHigh.isChecked == false &&
+                    dialogBinding.rbMedium.isChecked == false &&
+                    dialogBinding.rbLow.isChecked == false){
+                    Toast.makeText(this@MainActivity, "Select Priority", Toast.LENGTH_SHORT).show()
+                }
                 else{
                     if (position>-1){
                         //Update List
                         todoDatabase.todoDao().update(
                             TodoEntity(
                                 id = arrayList[position].id,
-                                title = dialogBinding.etTitle.text.toString()
+                                title = dialogBinding.etTitle.text.toString(),
+                                description = dialogBinding.etDescription.text.toString()
                             )
                         )
                     }else{
                         //Add List
+                        var counter=0
+                        when(dialogBinding.radioGroup.checkedRadioButtonId){
+                            R.id.rbHigh-> counter = 1
+                            R.id.rbMedium-> counter = 2
+                            R.id.rbLow-> counter = 3
+                        }
                         todoDatabase.todoDao().insertData(
                             TodoEntity(
-                            title = dialogBinding.etTitle.text.toString()
+                                title = dialogBinding.etTitle.text.toString(),
+                                description = dialogBinding.etDescription.text.toString(),
+                                status = counter
                             )
                         )
                     }
@@ -118,4 +148,20 @@ class MainActivity : AppCompatActivity(),InterfaceClass {
         arrayList.addAll(todoDatabase.todoDao().getList())
         adapterClass.notifyDataSetChanged()
     }
+    fun getHighData(){
+        arrayList.clear()
+        arrayList.addAll(todoDatabase.todoDao().getHighList())
+        adapterClass.notifyDataSetChanged()
+    }
+    fun getMediumData(){
+        arrayList.clear()
+        arrayList.addAll(todoDatabase.todoDao().getMediumList())
+        adapterClass.notifyDataSetChanged()
+    }
+    fun getLowData(){
+        arrayList.clear()
+        arrayList.addAll(todoDatabase.todoDao().getLowList())
+        adapterClass.notifyDataSetChanged()
+    }
+
 }

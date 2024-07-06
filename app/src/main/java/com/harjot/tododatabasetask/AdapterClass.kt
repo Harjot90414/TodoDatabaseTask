@@ -3,16 +3,16 @@ package com.harjot.tododatabasetask
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import org.w3c.dom.Text
+import com.harjot.tododatabasetask.Interface.InterfaceClass
 
 class AdapterClass(var arrayList: ArrayList<TodoEntity>,var interfaceClass: InterfaceClass):
     RecyclerView.Adapter<AdapterClass.ViewHolder>() {
     class ViewHolder(view: View):RecyclerView.ViewHolder(view) {
-        var name = view.findViewById<TextView>(R.id.tvName)
+        var title = view.findViewById<TextView>(R.id.tvTitle)
+        var description = view.findViewById<TextView>(R.id.tvDescription)
         var edit = view.findViewById<ImageButton>(R.id.ibEdit)
         var update = view.findViewById<ImageButton>(R.id.ibDelete)
     }
@@ -26,7 +26,13 @@ class AdapterClass(var arrayList: ArrayList<TodoEntity>,var interfaceClass: Inte
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.name.setText(arrayList[position].name)
+        holder.title.setText(arrayList[position].title)
+        holder.description.setText(arrayList[position].description)
+
+        holder.itemView.setOnClickListener {
+            interfaceClass.listCLick(position)
+        }
+
         holder.edit.setOnClickListener {
             interfaceClass.onEditCLick(position)
         }

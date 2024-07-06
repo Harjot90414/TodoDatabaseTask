@@ -17,13 +17,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/tilTitle"
-        android:hint="Enter Name"
+        android:hint="Enter Title"
         android:layout_margin="10dp">
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
+            android:capitalize="words"
             android:id="@+id/etTitle"
+            android:maxLines="1"/>
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tilDesccription"
+        android:hint="Enter Description"
+        android:layout_margin="10dp">
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:capitalize="sentences"
+            android:id="@+id/etDescription"
             android:maxLines="1"/>
     </com.google.android.material.textfield.TextInputLayout>
     <RadioGroup
