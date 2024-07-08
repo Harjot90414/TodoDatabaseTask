@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity(), InterfaceClass {
         }
         binding.radioGroup.setOnCheckedChangeListener { radioGroup, i ->
             when(i){
-                R.id.rbAll->getData(0)
+                R.id.rbAll->getData()
                 R.id.rbHigh->getHighData()
                 R.id.rbMedium->getMediumData()
                 R.id.rbLow->getLowData()
@@ -170,8 +170,8 @@ class MainActivity : AppCompatActivity(), InterfaceClass {
     fun getData(num :Int=0){
         when (num) {
             0->{arrayList.clear()
-                arrayList . addAll (todoDatabase.todoDao().getList())
-                adapterClass . notifyDataSetChanged ()
+                arrayList.addAll(todoDatabase.todoDao().getList())
+                adapterClass.notifyDataSetChanged ()
             }
             1->getHighData()
             2->getMediumData()

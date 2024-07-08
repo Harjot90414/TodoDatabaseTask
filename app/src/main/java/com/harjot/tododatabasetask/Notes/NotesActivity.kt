@@ -11,16 +11,17 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
+import com.harjot.tododatabasetask.Interface.NotesInterfaceClass
 import com.harjot.tododatabasetask.TodoDatabase
 import com.harjot.tododatabasetask.TodoEntity
 import com.harjot.tododatabasetask.databinding.ActivityNotesBinding
 import com.harjot.tododatabasetask.databinding.NotesDialogLayoutBinding
 
-class NotesActivity : AppCompatActivity() {
+class NotesActivity : AppCompatActivity(),NotesInterfaceClass {
     lateinit var binding: ActivityNotesBinding
     var todoEntity = TodoEntity()
     var array = arrayListOf<NotesEntity>()
-    var notesAdapter = NotesAdapter(array)
+    var notesAdapter = NotesAdapter(array, this)
     lateinit var todoDatabase:TodoDatabase
     var notesEntity = NotesEntity()
     lateinit var layoutManager: LinearLayoutManager
@@ -81,5 +82,11 @@ class NotesActivity : AppCompatActivity() {
             todoDatabase.todoDao().getListItem(todoEntity.id)
         )
         notesAdapter.notifyDataSetChanged()
+    }
+
+    override fun onCheckBoxClick(click: Boolean) {
+//        todoDatabase.todoDao().insertItem(NotesEntity(
+//            check = true
+//        ))
     }
 }

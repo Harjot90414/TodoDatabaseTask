@@ -16,6 +16,6 @@
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/checkBox"
+        android:id="@+id/itemCheckBox"
         android:layout_marginEnd="10dp"/>
 </LinearLayout>
